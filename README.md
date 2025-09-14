@@ -4,3 +4,9 @@ V0.1
 
 V0.2
 <img width="602" height="432" alt="image" src="https://github.com/user-attachments/assets/f0a36fdb-4a80-449f-a9d2-ec45fd4dde62" />
+
+v0.3
+<img width="782" height="512" alt="image" src="https://github.com/user-attachments/assets/2e5d1a08-674d-49a8-9d90-bc7d1e562fdc" />
+
+v0.4
+<img width="791" height="509" alt="image" src="https://github.com/user-attachments/assets/8c36325c-3892-4baf-a820-28d60ec6236c" />
