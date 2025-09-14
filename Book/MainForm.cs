@@ -60,15 +60,15 @@ namespace BookCollectionModule
             // Проверка данных
             if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
-                string.IsNullOrWhiteSpace(txtGenre.Text) ||
+                comboGenre.SelectedIndex < 0 || // проверка выбранного жанра
                 !int.TryParse(txtYear.Text, out int year))
             {
-                MessageBox.Show("Введите корректные данные!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Введите корректные данные и выберите жанр!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             // Создаем и добавляем книгу
-            Book newBook = new Book(txtTitle.Text, txtAuthor.Text, year, txtGenre.Text);
+            Book newBook = new Book(txtTitle.Text, txtAuthor.Text, year, comboGenre.SelectedItem.ToString());
             manager.AddBook(newBook);
 
             // Обновляем таблицу
@@ -78,7 +78,7 @@ namespace BookCollectionModule
             txtTitle.Clear();
             txtAuthor.Clear();
             txtYear.Clear();
-            txtGenre.Clear();
+            comboGenre.SelectedIndex = -1; // сброс ComboBox
         }
 
         private void btnFind_Click(object sender, EventArgs e)
