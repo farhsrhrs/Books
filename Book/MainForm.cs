@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace BookCollectionModule
@@ -38,13 +40,31 @@ namespace BookCollectionModule
         private void btnFind_Click(object sender, EventArgs e)
         {
             listBooks.Items.Clear();
-            var found = rbTitle.Checked
-                ? manager.FindBookByName(txtSearch.Text)
-                : manager.FindBookByAuthor(txtSearch.Text);
+            var criteria = comboCriteria.SelectedItem.ToString();
+            var query = txtSearch.Text.Trim();
+            List<Book> found = new List<Book>();
+
+            if (string.IsNullOrEmpty(query))
+                return;
+
+            switch (criteria)
+            {
+                case "Название":
+                    found = manager.FindBookByName(query);
+                    break;
+                case "Автор":
+                    found = manager.FindBookByAuthor(query);
+                    break;
+                case "Год":
+                    if (int.TryParse(query, out int year))
+                        found = manager.GetAllBooks().Where(b => b.Year == year).ToList();
+                    break;
+            }
 
             foreach (var book in found)
                 listBooks.Items.Add(book);
         }
+
 
         private void btnShowAll_Click(object sender, EventArgs e)
         {
@@ -57,5 +77,6 @@ namespace BookCollectionModule
             foreach (var book in manager.GetAllBooks())
                 listBooks.Items.Add(book);
         }
+
     }
 }
