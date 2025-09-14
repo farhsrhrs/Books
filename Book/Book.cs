@@ -2,17 +2,16 @@
 
 namespace BookCollectionModule
 {
-    // Класс книги
     public class Book
     {
-        public Guid Id { get; private set; }      // Уникальный идентификатор
-        public string Title { get; set; }         // Название
-        public string Author { get; set; }        // Автор
-        public int Year { get; set; }             // Год издания
+        public Guid Id { get; private set; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public int Year { get; set; }
 
         public Book(string title, string author, int year)
         {
-            Id = Guid.NewGuid();  // Автоматически генерируется
+            Id = Guid.NewGuid();
             Title = title;
             Author = author;
             Year = year;
@@ -20,7 +19,7 @@ namespace BookCollectionModule
 
         public override string ToString()
         {
-            return $"{Title} ({Year}), автор: {Author}, ID: {Id}";
+            return $"{Title} ({Year}), {Author}";
         }
     }
 }
