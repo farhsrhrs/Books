@@ -1,128 +1,214 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
+using Npgsql;
 
 namespace BookCollectionModule
 {
     public partial class MainForm : Form
     {
-        private BookManager manager = new BookManager();
+        private string connectionString = "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books";
 
         public MainForm()
         {
             InitializeComponent();
-
-            // Привязка обработчиков
-            btnAdd.Click += btnAdd_Click;
-            btnFind.Click += btnFind_Click;
-            btnShowAll.Click += btnShowAll_Click;
-
-            // Настройка DataGridView
-            dgvBooks.AutoGenerateColumns = false;
-            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "ID",
-                DataPropertyName = "Id",
-                Width = 80
-            });
-            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Название",
-                DataPropertyName = "Title",
-                Width = 150
-            });
-            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Автор",
-                DataPropertyName = "Author",
-                Width = 120
-            });
-            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Год",
-                DataPropertyName = "Year",
-                Width = 60
-            });
-            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                HeaderText = "Жанр",
-                DataPropertyName = "Genre",
-                Width = 100
-            });
-
-            // Заполнить начальный список
+            InitializeDataGrid();
+            LoadGenres();
+            InitializeCriteria();
             UpdateList();
         }
 
+        // ---------------- DataGrid ----------------
+        private void InitializeDataGrid()
+        {
+            dgvBooks.Columns.Clear();
+            dgvBooks.Columns.Add("ID", "ID");
+            dgvBooks.Columns.Add("Title", "Название");
+            dgvBooks.Columns.Add("Author", "Автор");
+            dgvBooks.Columns.Add("Year", "Год");
+            dgvBooks.Columns.Add("Genre", "Жанр");
+
+            dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvBooks.MultiSelect = false;
+            dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+
+        // ---------------- ComboBox жанров ----------------
+        private void LoadGenres()
+        {
+            comboGenre.Items.Clear();
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new NpgsqlCommand("SELECT id, name FROM genres ORDER BY name", conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    comboGenre.Items.Add(new ComboBoxItem
+                    {
+                        Id = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    });
+                }
+            }
+            if (comboGenre.Items.Count > 0)
+                comboGenre.SelectedIndex = 0;
+        }
+
+        private void InitializeCriteria()
+        {
+            comboCriteria.Items.Clear();
+            comboCriteria.Items.AddRange(new object[] { "Название", "Автор", "Год", "Жанр" });
+            comboCriteria.SelectedIndex = 0;
+        }
+
+        private class ComboBoxItem
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public override string ToString() => Name;
+        }
+
+        // ---------------- Добавление ----------------
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // Проверка данных
             if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
-                comboGenre.SelectedIndex < 0 || // проверка выбранного жанра
+                comboGenre.SelectedItem == null ||
                 !int.TryParse(txtYear.Text, out int year))
             {
-                MessageBox.Show("Введите корректные данные и выберите жанр!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Введите корректные данные!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Создаем и добавляем книгу
-            Book newBook = new Book(txtTitle.Text, txtAuthor.Text, year, comboGenre.SelectedItem.ToString());
-            manager.AddBook(newBook);
+            var genreItem = (ComboBoxItem)comboGenre.SelectedItem;
 
-            // Обновляем таблицу
-            UpdateList();
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new NpgsqlCommand(
+                    "INSERT INTO books(title, author, year, genre_id) VALUES (@title,@author,@year,@genre)",
+                    conn);
+                cmd.Parameters.AddWithValue("title", txtTitle.Text);
+                cmd.Parameters.AddWithValue("author", txtAuthor.Text);
+                cmd.Parameters.AddWithValue("year", year);
+                cmd.Parameters.AddWithValue("genre", genreItem.Id);
+                cmd.ExecuteNonQuery();
+            }
 
-            // Очистка полей
             txtTitle.Clear();
             txtAuthor.Clear();
             txtYear.Clear();
-            comboGenre.SelectedIndex = -1; // сброс ComboBox
+            comboGenre.SelectedIndex = 0;
+
+            UpdateList();
         }
 
-        private void btnFind_Click(object sender, EventArgs e)
+        // ---------------- Удаление ----------------
+        private void btnRemoveById_Click(object sender, EventArgs e)
         {
-            string query = txtSearch.Text.Trim();
-            if (string.IsNullOrEmpty(query))
-                return;
-
-            string criteria = comboCriteria.SelectedItem?.ToString();
-            List<Book> found = new List<Book>();
-
-            switch (criteria)
+            if (!int.TryParse(txtRemoveId.Text, out int id))
             {
-                case "Название":
-                    found = manager.FindBookByName(query);
-                    break;
-                case "Автор":
-                    found = manager.FindBookByAuthor(query);
-                    break;
-                case "Год":
-                    if (int.TryParse(query, out int year))
-                        found = manager.GetAllBooks().Where(b => b.Year == year).ToList();
-                    break;
-                case "Жанр":
-                    found = manager.GetAllBooks()
-                        .Where(b => b.Genre.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-                        .ToList();
-                    break;
+                MessageBox.Show("Введите корректный ID!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
-            dgvBooks.DataSource = null;
-            dgvBooks.DataSource = found;
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new NpgsqlCommand("DELETE FROM books WHERE id=@id", conn);
+                cmd.Parameters.AddWithValue("id", id);
+                int rows = cmd.ExecuteNonQuery();
+                if (rows == 0)
+                    MessageBox.Show("Книга с таким ID не найдена.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            txtRemoveId.Clear();
+            UpdateList();
         }
 
+        // ---------------- Показать все ----------------
         private void btnShowAll_Click(object sender, EventArgs e)
         {
             UpdateList();
         }
 
+        // ---------------- Поиск ----------------
+        private void btnFind_Click(object sender, EventArgs e)
+        {
+            string criteria = comboCriteria.SelectedItem?.ToString();
+            string query = txtSearch.Text.Trim();
+            if (string.IsNullOrEmpty(query)) return;
+
+            List<Book> books = new List<Book>();
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
+                             "FROM books b JOIN genres g ON b.genre_id=g.id WHERE ";
+
+                switch (criteria)
+                {
+                    case "Название": sql += "b.title ILIKE @q"; break;
+                    case "Автор": sql += "b.author ILIKE @q"; break;
+                    case "Год": sql += "b.year=@q"; break;
+                    case "Жанр": sql += "g.name ILIKE @q"; break;
+                    default: sql += "1=0"; break;
+                }
+
+                var cmd = new NpgsqlCommand(sql, conn);
+                if (criteria == "Год")
+                    cmd.Parameters.AddWithValue("q", int.Parse(query));
+                else
+                    cmd.Parameters.AddWithValue("q", "%" + query + "%");
+
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    books.Add(new Book(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4),
+                        reader.GetString(5)
+                    ));
+                }
+            }
+
+            dgvBooks.Rows.Clear();
+            foreach (var book in books)
+                dgvBooks.Rows.Add(book.Id, book.Title, book.Author, book.Year, book.GenreName);
+        }
+
+        // ---------------- Обновление списка ----------------
         private void UpdateList()
         {
-            dgvBooks.DataSource = null;
-            dgvBooks.DataSource = manager.GetAllBooks();
+            List<Book> books = new List<Book>();
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new NpgsqlCommand(
+                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
+                    "FROM books b JOIN genres g ON b.genre_id=g.id ORDER BY b.id",
+                    conn);
+                var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    books.Add(new Book(
+                        reader.GetInt32(0),
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetInt32(3),
+                        reader.GetInt32(4),
+                        reader.GetString(5)
+                    ));
+                }
+            }
+
+            dgvBooks.Rows.Clear();
+            foreach (var book in books)
+                dgvBooks.Rows.Add(book.Id, book.Title, book.Author, book.Year, book.GenreName);
         }
     }
-
 }

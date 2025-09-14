@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BookCollectionModule
@@ -20,6 +22,6 @@ namespace BookCollectionModule
             books.Where(b => b.Author.IndexOf(author, System.StringComparison.OrdinalIgnoreCase) >= 0).ToList();
 
         public List<Book> FindBookByGenre(string genre) =>
-            books.Where(b => b.Genre.IndexOf(genre, System.StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            books.Where(b => b.GenreName.IndexOf(genre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
     }
 }
