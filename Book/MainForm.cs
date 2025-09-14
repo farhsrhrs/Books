@@ -12,40 +12,83 @@ namespace BookCollectionModule
         public MainForm()
         {
             InitializeComponent();
+
+            // Привязка обработчиков
+            btnAdd.Click += btnAdd_Click;
+            btnFind.Click += btnFind_Click;
+            btnShowAll.Click += btnShowAll_Click;
+
+            // Настройка DataGridView
+            dgvBooks.AutoGenerateColumns = false;
+            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "ID",
+                DataPropertyName = "Id",
+                Width = 80
+            });
+            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Название",
+                DataPropertyName = "Title",
+                Width = 150
+            });
+            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Автор",
+                DataPropertyName = "Author",
+                Width = 120
+            });
+            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Год",
+                DataPropertyName = "Year",
+                Width = 60
+            });
+            dgvBooks.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                HeaderText = "Жанр",
+                DataPropertyName = "Genre",
+                Width = 100
+            });
+
+            // Заполнить начальный список
+            UpdateList();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            // Проверка данных
             if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
                 string.IsNullOrWhiteSpace(txtAuthor.Text) ||
+                string.IsNullOrWhiteSpace(txtGenre.Text) ||
                 !int.TryParse(txtYear.Text, out int year))
             {
-                MessageBox.Show("Введите корректные данные!");
+                MessageBox.Show("Введите корректные данные!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            manager.AddBook(new Book(txtTitle.Text, txtAuthor.Text, year));
-            UpdateList();
-        }
+            // Создаем и добавляем книгу
+            Book newBook = new Book(txtTitle.Text, txtAuthor.Text, year, txtGenre.Text);
+            manager.AddBook(newBook);
 
-        private void btnRemove_Click(object sender, EventArgs e)
-        {
-            if (listBooks.SelectedItem is Book selectedBook)
-            {
-                manager.RemoveBook(selectedBook.Id);
-                UpdateList();
-            }
+            // Обновляем таблицу
+            UpdateList();
+
+            // Очистка полей
+            txtTitle.Clear();
+            txtAuthor.Clear();
+            txtYear.Clear();
+            txtGenre.Clear();
         }
 
         private void btnFind_Click(object sender, EventArgs e)
         {
-            listBooks.Items.Clear();
-            var criteria = comboCriteria.SelectedItem.ToString();
-            var query = txtSearch.Text.Trim();
-            List<Book> found = new List<Book>();
-
+            string query = txtSearch.Text.Trim();
             if (string.IsNullOrEmpty(query))
                 return;
+
+            string criteria = comboCriteria.SelectedItem?.ToString();
+            List<Book> found = new List<Book>();
 
             switch (criteria)
             {
@@ -59,12 +102,16 @@ namespace BookCollectionModule
                     if (int.TryParse(query, out int year))
                         found = manager.GetAllBooks().Where(b => b.Year == year).ToList();
                     break;
+                case "Жанр":
+                    found = manager.GetAllBooks()
+                        .Where(b => b.Genre.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                    break;
             }
 
-            foreach (var book in found)
-                listBooks.Items.Add(book);
+            dgvBooks.DataSource = null;
+            dgvBooks.DataSource = found;
         }
-
 
         private void btnShowAll_Click(object sender, EventArgs e)
         {
@@ -73,10 +120,9 @@ namespace BookCollectionModule
 
         private void UpdateList()
         {
-            listBooks.Items.Clear();
-            foreach (var book in manager.GetAllBooks())
-                listBooks.Items.Add(book);
+            dgvBooks.DataSource = null;
+            dgvBooks.DataSource = manager.GetAllBooks();
         }
-
     }
+
 }
