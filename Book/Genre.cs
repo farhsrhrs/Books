@@ -1,4 +1,4 @@
-﻿namespace BookCollectionModule
+﻿namespace Book
 {
     public class Genre
     {

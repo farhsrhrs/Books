@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BookCollectionModule
+namespace Book
 {
     public class BookManager
     {

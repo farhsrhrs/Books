@@ -1,7 +1,7 @@
 ﻿  using System;
 using System.Windows.Forms;
 
-namespace BookCollectionModule
+namespace Book
 {
     internal static class Program
     {
@@ -10,7 +10,7 @@ namespace BookCollectionModule
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new Test());
         }
     }
 }

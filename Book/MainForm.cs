@@ -7,7 +7,7 @@ using OfficeOpenXml.Style;
 using System.IO;
 
 
-namespace BookCollectionModule
+namespace Book
 {
     public partial class MainForm : Form
     {
