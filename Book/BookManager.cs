@@ -1,27 +1,140 @@
-﻿using System.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Npgsql;
 
-namespace Book
+namespace Book.Services
 {
-    public class BookManager
+    public class BookService
     {
-        private List<Book> books = new List<Book>();
+        private readonly string connectionString;
 
-        public void AddBook(Book book) => books.Add(book);
+        public BookService(string connStr)
+        {
+            connectionString = connStr;
+        }
 
-        public void RemoveBook(int id) => books.RemoveAll(b => b.Id == id);
+        public List<Book> GetAllBooks()
+        {
+            var books = new List<Book>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(
+                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
+                    "FROM book b JOIN genre g ON b.genre_id=g.id ORDER BY b.id", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            books.Add(new Book(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetInt32(3),
+                                reader.GetInt32(4),
+                                reader.GetString(5)
+                            ));
+                        }
+                    }
+                }
+            }
+            return books;
+        }
 
-        public List<Book> GetAllBooks() => new List<Book>(books);
+        public void AddBook(string title, string author, int year, int genreId)
+        {
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(
+                    "INSERT INTO books(title, author, year, genre_id) VALUES (@title,@author,@year,@genre)",
+                    conn))
+                {
+                    cmd.Parameters.AddWithValue("title", title);
+                    cmd.Parameters.AddWithValue("author", author);
+                    cmd.Parameters.AddWithValue("year", year);
+                    cmd.Parameters.AddWithValue("genre", genreId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
-        public List<Book> FindBookByName(string name) =>
-            books.Where(b => b.Title.IndexOf(name, System.StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        public bool RemoveBook(int id)
+        {
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("DELETE FROM books WHERE id=@id", conn))
+                {
+                    cmd.Parameters.AddWithValue("id", id);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
 
-        public List<Book> FindBookByAuthor(string author) =>
-            books.Where(b => b.Author.IndexOf(author, System.StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        public List<Genre> GetGenres()
+        {
+            var genres = new List<Genre>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT id, name FROM genre ORDER BY name", conn))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            genres.Add(new Genre
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1)
+                            });
+                        }
+                    }
+                }
+            }
+            return genres;
+        }
 
-        public List<Book> FindBookByGenre(string genre) =>
-            books.Where(b => b.GenreName.IndexOf(genre, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+        public List<Book> SearchBooks(string criteria, string query)
+        {
+            var books = new List<Book>();
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                string sql = "1=0";
+                if (criteria == "Название") sql = "b.title ILIKE @q";
+                else if (criteria == "Автор") sql = "b.author ILIKE @q";
+                else if (criteria == "Год") sql = "b.year = @q";
+                else if (criteria == "Жанр") sql = "g.name ILIKE @q";
+
+                using (var cmd = new NpgsqlCommand(
+                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
+                    "FROM books b JOIN genres g ON b.genre_id=g.id WHERE " + sql, conn))
+                {
+                    if (criteria == "Год")
+                        cmd.Parameters.AddWithValue("q", int.Parse(query));
+                    else
+                        cmd.Parameters.AddWithValue("q", "%" + query + "%");
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            books.Add(new Book(
+                                reader.GetInt32(0),
+                                reader.GetString(1),
+                                reader.GetString(2),
+                                reader.GetInt32(3),
+                                reader.GetInt32(4),
+                                reader.GetString(5)
+                            ));
+                        }
+                    }
+                }
+            }
+            return books;
+        }
     }
 }
