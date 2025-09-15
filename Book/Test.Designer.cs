@@ -51,10 +51,26 @@ namespace Book
             this.lblYear = new System.Windows.Forms.Label();
             this.txtYear = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.dgvWarehouses = new System.Windows.Forms.DataGridView();
+            this.buttonAddWarehouse = new System.Windows.Forms.Button();
+            this.labelQuantity = new System.Windows.Forms.Label();
+            this.labelNameBook = new System.Windows.Forms.Label();
+            this.labelLocation = new System.Windows.Forms.Label();
+            this.comboBoxNameBook = new System.Windows.Forms.ComboBox();
+            this.textQuantity = new System.Windows.Forms.TextBox();
+            this.textLocation = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.buttonAddCompany = new System.Windows.Forms.Button();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.labelImage = new System.Windows.Forms.Label();
+            this.labelPhone = new System.Windows.Forms.Label();
+            this.lableOrganization = new System.Windows.Forms.Label();
+            this.labelName = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl1.SuspendLayout();
@@ -62,6 +78,8 @@ namespace Book
             ((System.ComponentModel.ISupportInitialize)(this.dgvBooks)).BeginInit();
             this.panelSearch.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWarehouses)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -185,6 +203,11 @@ namespace Book
             // comboCriteria
             // 
             this.comboCriteria.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboCriteria.Items.AddRange(new object[] {
+            "Название",
+            "Автор",
+            "Год",
+            "Жанр"});
             this.comboCriteria.Location = new System.Drawing.Point(70, 52);
             this.comboCriteria.Name = "comboCriteria";
             this.comboCriteria.Size = new System.Drawing.Size(150, 21);
@@ -199,6 +222,7 @@ namespace Book
             this.btnFind.TabIndex = 4;
             this.btnFind.Text = "Найти";
             this.btnFind.UseVisualStyleBackColor = false;
+            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
             // 
             // btnShowAll
             // 
@@ -301,6 +325,14 @@ namespace Book
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.dgvWarehouses);
+            this.tabPage3.Controls.Add(this.buttonAddWarehouse);
+            this.tabPage3.Controls.Add(this.labelQuantity);
+            this.tabPage3.Controls.Add(this.labelNameBook);
+            this.tabPage3.Controls.Add(this.labelLocation);
+            this.tabPage3.Controls.Add(this.comboBoxNameBook);
+            this.tabPage3.Controls.Add(this.textQuantity);
+            this.tabPage3.Controls.Add(this.textLocation);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -309,29 +341,72 @@ namespace Book
             this.tabPage3.Text = "Добавить Склад";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // tabPage4
+            // dgvWarehouses
             // 
-            this.tabPage4.Controls.Add(this.pictureBox1);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(776, 513);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Добавить Компанию";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.dgvWarehouses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvWarehouses.Location = new System.Drawing.Point(31, 168);
+            this.dgvWarehouses.Name = "dgvWarehouses";
+            this.dgvWarehouses.Size = new System.Drawing.Size(398, 228);
+            this.dgvWarehouses.TabIndex = 7;
             // 
-            // pictureBox1
+            // buttonAddWarehouse
             // 
-            this.pictureBox1.AllowDrop = true;
-            this.pictureBox1.BackColor = System.Drawing.Color.Black;
-            this.pictureBox1.ErrorImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.ErrorImage")));
-            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
-            this.pictureBox1.Location = new System.Drawing.Point(159, 69);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(365, 173);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.WaitOnLoad = true;
+            this.buttonAddWarehouse.Location = new System.Drawing.Point(620, 454);
+            this.buttonAddWarehouse.Name = "buttonAddWarehouse";
+            this.buttonAddWarehouse.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddWarehouse.TabIndex = 6;
+            this.buttonAddWarehouse.Text = "Добавить";
+            this.buttonAddWarehouse.UseVisualStyleBackColor = true;
+            // 
+            // labelQuantity
+            // 
+            this.labelQuantity.AutoSize = true;
+            this.labelQuantity.Location = new System.Drawing.Point(28, 101);
+            this.labelQuantity.Name = "labelQuantity";
+            this.labelQuantity.Size = new System.Drawing.Size(63, 13);
+            this.labelQuantity.TabIndex = 5;
+            this.labelQuantity.Text = "Количетво:";
+            // 
+            // labelNameBook
+            // 
+            this.labelNameBook.AutoSize = true;
+            this.labelNameBook.Location = new System.Drawing.Point(28, 74);
+            this.labelNameBook.Name = "labelNameBook";
+            this.labelNameBook.Size = new System.Drawing.Size(92, 13);
+            this.labelNameBook.TabIndex = 4;
+            this.labelNameBook.Text = "Название книги:";
+            // 
+            // labelLocation
+            // 
+            this.labelLocation.AutoSize = true;
+            this.labelLocation.Location = new System.Drawing.Point(28, 48);
+            this.labelLocation.Name = "labelLocation";
+            this.labelLocation.Size = new System.Drawing.Size(124, 13);
+            this.labelLocation.TabIndex = 3;
+            this.labelLocation.Text = "Расположение склада:";
+            // 
+            // comboBoxNameBook
+            // 
+            this.comboBoxNameBook.FormattingEnabled = true;
+            this.comboBoxNameBook.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.comboBoxNameBook.Location = new System.Drawing.Point(176, 71);
+            this.comboBoxNameBook.Name = "comboBoxNameBook";
+            this.comboBoxNameBook.Size = new System.Drawing.Size(253, 21);
+            this.comboBoxNameBook.TabIndex = 2;
+            // 
+            // textQuantity
+            // 
+            this.textQuantity.Location = new System.Drawing.Point(176, 98);
+            this.textQuantity.Name = "textQuantity";
+            this.textQuantity.Size = new System.Drawing.Size(253, 20);
+            this.textQuantity.TabIndex = 1;
+            // 
+            // textLocation
+            // 
+            this.textLocation.Location = new System.Drawing.Point(176, 45);
+            this.textLocation.Name = "textLocation";
+            this.textLocation.Size = new System.Drawing.Size(253, 20);
+            this.textLocation.TabIndex = 0;
             // 
             // tabPage5
             // 
@@ -352,6 +427,104 @@ namespace Book
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Список заказов";
             this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.buttonAddCompany);
+            this.tabPage4.Controls.Add(this.textBox3);
+            this.tabPage4.Controls.Add(this.textBox2);
+            this.tabPage4.Controls.Add(this.textBox1);
+            this.tabPage4.Controls.Add(this.labelImage);
+            this.tabPage4.Controls.Add(this.labelPhone);
+            this.tabPage4.Controls.Add(this.lableOrganization);
+            this.tabPage4.Controls.Add(this.labelName);
+            this.tabPage4.Controls.Add(this.pictureBox1);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(776, 513);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Добовление компании";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // buttonAddCompany
+            // 
+            this.buttonAddCompany.Location = new System.Drawing.Point(680, 468);
+            this.buttonAddCompany.Name = "buttonAddCompany";
+            this.buttonAddCompany.Size = new System.Drawing.Size(75, 23);
+            this.buttonAddCompany.TabIndex = 8;
+            this.buttonAddCompany.Text = "Добавить";
+            this.buttonAddCompany.UseVisualStyleBackColor = true;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(141, 94);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(179, 20);
+            this.textBox3.TabIndex = 7;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(141, 68);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(179, 20);
+            this.textBox2.TabIndex = 6;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(141, 42);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(179, 20);
+            this.textBox1.TabIndex = 5;
+            // 
+            // labelImage
+            // 
+            this.labelImage.AutoSize = true;
+            this.labelImage.Location = new System.Drawing.Point(484, 211);
+            this.labelImage.Name = "labelImage";
+            this.labelImage.Size = new System.Drawing.Size(52, 13);
+            this.labelImage.TabIndex = 4;
+            this.labelImage.Text = "Логотип:";
+            // 
+            // labelPhone
+            // 
+            this.labelPhone.AutoSize = true;
+            this.labelPhone.Location = new System.Drawing.Point(58, 97);
+            this.labelPhone.Name = "labelPhone";
+            this.labelPhone.Size = new System.Drawing.Size(55, 13);
+            this.labelPhone.TabIndex = 3;
+            this.labelPhone.Text = "Телефон:";
+            // 
+            // lableOrganization
+            // 
+            this.lableOrganization.AutoSize = true;
+            this.lableOrganization.Location = new System.Drawing.Point(58, 71);
+            this.lableOrganization.Name = "lableOrganization";
+            this.lableOrganization.Size = new System.Drawing.Size(77, 13);
+            this.lableOrganization.TabIndex = 2;
+            this.lableOrganization.Text = "Организация:";
+            // 
+            // labelName
+            // 
+            this.labelName.AutoSize = true;
+            this.labelName.Location = new System.Drawing.Point(58, 45);
+            this.labelName.Name = "labelName";
+            this.labelName.Size = new System.Drawing.Size(60, 13);
+            this.labelName.TabIndex = 1;
+            this.labelName.Text = "Название:";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.AllowDrop = true;
+            this.pictureBox1.BackColor = System.Drawing.Color.Black;
+            this.pictureBox1.ErrorImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.ErrorImage")));
+            this.pictureBox1.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox1.InitialImage")));
+            this.pictureBox1.Location = new System.Drawing.Point(554, 42);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(201, 182);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.WaitOnLoad = true;
             // 
             // statusStrip1
             // 
@@ -384,12 +557,17 @@ namespace Book
             this.panelSearch.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvWarehouses)).EndInit();
             this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+            btnShowAll.Click += btnShowAll_Click;
 
         }
         private Label lblTitle;
@@ -418,5 +596,21 @@ namespace Book
         private TabPage tabPage5;
         private TabPage tabPage6;
         private PictureBox pictureBox1;
+        private Label labelQuantity;
+        private Label labelNameBook;
+        private Label labelLocation;
+        private ComboBox comboBoxNameBook;
+        private TextBox textQuantity;
+        private TextBox textLocation;
+        private Label labelName;
+        private TextBox textBox3;
+        private TextBox textBox2;
+        private TextBox textBox1;
+        private Label labelImage;
+        private Label labelPhone;
+        private Label lableOrganization;
+        private Button buttonAddCompany;
+        private Button buttonAddWarehouse;
+        private DataGridView dgvWarehouses;
     }
 }

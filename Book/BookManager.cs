@@ -42,13 +42,37 @@ namespace Book.Services
             return books;
         }
 
+        public List<Genre> GetAllGenres()
+        {
+            var genres = new List<Genre>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand("SELECT id, name FROM genre", conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        genres.Add(new Genre
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            return genres;
+        }
+
         public void AddBook(string title, string author, int year, int genreId)
         {
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(
-                    "INSERT INTO books(title, author, year, genre_id) VALUES (@title,@author,@year,@genre)",
+                    "INSERT INTO book(title, author, year, genre_id) VALUES (@title,@author,@year,@genre)",
                     conn))
                 {
                     cmd.Parameters.AddWithValue("title", title);
@@ -65,7 +89,7 @@ namespace Book.Services
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand("DELETE FROM books WHERE id=@id", conn))
+                using (var cmd = new NpgsqlCommand("DELETE FROM book WHERE id=@id", conn))
                 {
                     cmd.Parameters.AddWithValue("id", id);
                     return cmd.ExecuteNonQuery() > 0;
@@ -111,7 +135,7 @@ namespace Book.Services
 
                 using (var cmd = new NpgsqlCommand(
                     "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
-                    "FROM books b JOIN genres g ON b.genre_id=g.id WHERE " + sql, conn))
+                    "FROM book b JOIN genre g ON b.genre_id=g.id WHERE " + sql, conn))
                 {
                     if (criteria == "Год")
                         cmd.Parameters.AddWithValue("q", int.Parse(query));

@@ -114,6 +114,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppLogic.cs" />
+    <Compile Include="Warehouse.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="BookManager.cs" />
     <Compile Include="Genre.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="Test.Designer.cs">
       <DependentUpon>Test.cs</DependentUpon>
     </Compile>
+    <Compile Include="WarehouseService.cs" />
     <EmbeddedResource Include="NewFolder1\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

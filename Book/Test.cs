@@ -1,64 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
-using Book;
-//using Book.Models;
-using Book.Services;
 
 namespace Book
 {
     public partial class Test : Form
     {
-        private readonly BookService bookService;
-        private List<Genre> genres;
+        private readonly AppLogic _logic;
 
         public Test()
         {
             InitializeComponent();
-            bookService = new BookService("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books");
 
-            InitializeDataGrid();
-            LoadGenres();
-            InitializeCriteria();
-            UpdateList();
+            _logic = new AppLogic("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books");
+
+            // инициализация DataGridView
+            InitializeDataGridBooks();
+            InitializeDataGridWarehouses();
+
+            // загрузка данных в таблицы
+            _logic.LoadBooks(dgvBooks);
+            _logic.LoadWarehouses(dgvWarehouses);
+
+            // загрузка жанров в comboGenre
+            _logic.LoadGenres(comboGenre);
+
+            // загрузка книг для склада
+            _logic.LoadBooksCombo(comboBoxNameBook);
+
+            // подписка на кнопки
+            btnAdd.Click += btnAddBook_Click;
+            btnRemoveById.Click += btnRemoveBook_Click;
+            buttonAddWarehouse.Click += btnAddWarehouse_Click;
+            
+            tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
         }
-        private void PictureBox1_DragEnter(object sender, DragEventArgs e)
+
+        private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Проверяем, что перетаскивается файл
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (tabControl1.SelectedTab == tabPage3) // вкладка "Добавить склад"
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                // Проверяем, что это изображение по расширению
-                if (files.Length > 0 &&
-                    (files[0].EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                     files[0].EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                     files[0].EndsWith(".bmp", StringComparison.OrdinalIgnoreCase)))
-                {
-                    e.Effect = DragDropEffects.Copy;
-                }
-                else
-                {
-                    e.Effect = DragDropEffects.None;
-                }
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
+                _logic.LoadBooksIntoComboBox(comboBoxNameBook);
             }
         }
-
-        private void PictureBox1_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files.Length > 0)
-            {
-                pictureBox1.Image = Image.FromFile(files[0]);
-                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage; // подогнать под размер
-            }
-        }
-
-        private void InitializeDataGrid()
+        private void InitializeDataGridBooks()
         {
             dgvBooks.Columns.Clear();
             dgvBooks.Columns.Add("ID", "ID");
@@ -66,95 +50,57 @@ namespace Book
             dgvBooks.Columns.Add("Author", "Автор");
             dgvBooks.Columns.Add("Year", "Год");
             dgvBooks.Columns.Add("Genre", "Жанр");
-
             dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvBooks.MultiSelect = false;
             dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
-        private void LoadGenres()
+        private void InitializeDataGridWarehouses()
         {
-            comboGenre.Items.Clear();
-            genres = bookService.GetGenres();
-            foreach (var g in genres)
-                comboGenre.Items.Add(g);
-
-            if (comboGenre.Items.Count > 0)
-                comboGenre.SelectedIndex = 0;
+            dgvWarehouses.Columns.Clear();
+            dgvWarehouses.Columns.Add("ID", "ID");
+            dgvWarehouses.Columns.Add("Location", "Склад");
+            dgvWarehouses.Columns.Add("BookId", "ID Книги");
+            dgvWarehouses.Columns.Add("Quantity", "Кол-во");
+            dgvWarehouses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvWarehouses.MultiSelect = false;
+            dgvWarehouses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
 
-        private void InitializeCriteria()
+        private void btnAddBook_Click(object sender, EventArgs e)
         {
-            comboCriteria.Items.Clear();
-            comboCriteria.Items.AddRange(new object[] { "Название", "Автор", "Год", "Жанр" });
-            comboCriteria.SelectedIndex = 0;
+            _logic.AddBook(txtTitle, txtAuthor, txtYear, comboGenre, dgvBooks);
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+
+        private void btnRemoveBook_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtTitle.Text) ||
-                string.IsNullOrWhiteSpace(txtAuthor.Text) ||
-                comboGenre.SelectedItem == null ||
-                !int.TryParse(txtYear.Text, out int year))
-            {
-                MessageBox.Show("Введите корректные данные!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var genre = (Genre)comboGenre.SelectedItem;
-            bookService.AddBook(txtTitle.Text, txtAuthor.Text, year, genre.Id);
-
-            txtTitle.Clear();
-            txtAuthor.Clear();
-            txtYear.Clear();
-            comboGenre.SelectedIndex = 0;
-
-            UpdateList();
+            _logic.RemoveBook(txtRemoveId, dgvBooks);
         }
 
-        private void btnRemoveById_Click(object sender, EventArgs e)
+
+        private void btnAddWarehouse_Click(object sender, EventArgs e)
         {
-            if (!int.TryParse(txtRemoveId.Text, out int id))
-            {
-                MessageBox.Show("Введите корректный ID!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (bookService.RemoveBook(id))
-                MessageBox.Show("Книга удалена!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            else
-                MessageBox.Show("Книга с таким ID не найдена.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-            txtRemoveId.Clear();
-            UpdateList();
+            _logic.AddWarehouse(textLocation, comboBoxNameBook, textQuantity, dgvWarehouses);
         }
 
-        private void btnShowAll_Click(object sender, EventArgs e)
+        private void btnRemoveWarehouse_Click(object sender, EventArgs e)
         {
-            UpdateList();
+           // _logic.RemoveWarehouse(txtWarehouseRemoveId, dgvWarehouses);
         }
 
         private void btnFind_Click(object sender, EventArgs e)
         {
             string criteria = comboCriteria.SelectedItem?.ToString();
             string query = txtSearch.Text.Trim();
-            if (string.IsNullOrEmpty(query)) return;
 
-            var books = bookService.SearchBooks(criteria, query);
-            FillDataGrid(books);
+            if (!string.IsNullOrEmpty(query))
+                _logic.SearchBooks(criteria, query, dgvBooks);
         }
-
-        private void UpdateList()
+        private void btnShowAll_Click(object sender, EventArgs e)
         {
-            var books = bookService.GetAllBooks();
-            FillDataGrid(books);
+            _logic.LoadBooks(dgvBooks);
         }
 
-        private void FillDataGrid(List<Book> books)
-        {
-            dgvBooks.Rows.Clear();
-            foreach (var book in books)
-                dgvBooks.Rows.Add(book.Id, book.Title, book.Author, book.Year, book.GenreName);
-        }
     }
 }
