@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Npgsql;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System.IO;
+
 
 namespace BookCollectionModule
 {
@@ -31,6 +35,64 @@ namespace BookCollectionModule
             dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvBooks.MultiSelect = false;
             dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            if (dgvBooks.Rows.Count == 0)
+            {
+                MessageBox.Show("Нет данных для экспорта!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (SaveFileDialog sfd = new SaveFileDialog()
+            {
+                Filter = "Excel файлы (*.xlsx)|*.xlsx",
+                FileName = "Books.xlsx"
+            })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Важно для EPPlus
+
+                        using (var package = new ExcelPackage())
+                        {
+                            var ws = package.Workbook.Worksheets.Add("Книги");
+
+                            // Заголовки
+                            for (int i = 0; i < dgvBooks.Columns.Count; i++)
+                            {
+                                ws.Cells[1, i + 1].Value = dgvBooks.Columns[i].HeaderText;
+                                ws.Cells[1, i + 1].Style.Font.Bold = true;
+                                ws.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                ws.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                            }
+
+                            // Данные
+                            for (int r = 0; r < dgvBooks.Rows.Count; r++)
+                            {
+                                for (int c = 0; c < dgvBooks.Columns.Count; c++)
+                                {
+                                    ws.Cells[r + 2, c + 1].Value = dgvBooks.Rows[r].Cells[c].Value?.ToString();
+                                }
+                            }
+
+                            ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                            // Сохраняем
+                            FileInfo fi = new FileInfo(sfd.FileName);
+                            package.SaveAs(fi);
+                        }
+
+                        MessageBox.Show("Данные успешно экспортированы!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Ошибка экспорта: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         // ---------------- ComboBox жанров ----------------

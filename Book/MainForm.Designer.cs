@@ -15,6 +15,18 @@ namespace BookCollectionModule
 
         private void InitializeComponent()
         {
+            this.btnExport = new Button();
+
+            // ---------------- btnExport ----------------
+            this.btnExport.Text = "Экспорт в Excel";
+            this.btnExport.Location = new System.Drawing.Point(420, 180);
+            this.btnExport.Size = new System.Drawing.Size(150, 40);
+            this.btnExport.BackColor = System.Drawing.Color.Khaki;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+
+            // Добавляе
+            this.Controls.Add(this.btnExport);
+
             this.groupAdd = new GroupBox();
             this.lblTitle = new Label();
             this.txtTitle = new TextBox();
@@ -182,5 +194,7 @@ namespace BookCollectionModule
         private Button btnShowAll;
 
         private DataGridView dgvBooks;
+        private Button btnExport;
+
     }
 }
