@@ -327,7 +327,7 @@ namespace Book
                 var whs = _warehouseService.GetAllWarehouses();
                 dgv.Rows.Clear();
                 foreach (var w in whs)
-                    dgv.Rows.Add(w.Id, w.Location, w.Book_id, w.Quantity);
+                    dgv.Rows.Add(w.Id, w.Location ,w.Name);
             }
             catch (Exception ex)
             {
@@ -336,34 +336,24 @@ namespace Book
         }
 
         // --- Добавить склад (в comboBook передаётся ComboBox с объектами Book) ---
-        public void AddWarehouse(TextBox txtLocation, ComboBox comboBook, TextBox txtQuantity, DataGridView dgv)
+        public void AddWarehouse(TextBox txtLocation, TextBox textname,  DataGridView dgv)
         {
             try
             {
                 string location = txtLocation?.Text?.Trim();
+                string name = textname?.Text?.Trim();
                 if (string.IsNullOrEmpty(location))
                 {
                     MessageBox.Show("Введите местоположение склада.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                if (!(comboBook?.SelectedItem is Book book))
-                {
-                    MessageBox.Show("Выберите книгу (из списка).", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+              
 
-                if (!int.TryParse(txtQuantity?.Text?.Trim(), out int qty) || qty < 0)
-                {
-                    MessageBox.Show("Некорректное количество.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                _warehouseService.AddWarehouse(location, book.Id, qty);
+                _warehouseService.AddWarehouse(location, name);
                 LoadWarehouses(dgv);
 
                 txtLocation.Clear();
-                txtQuantity.Clear();
 
                 MessageBox.Show("Склад добавлен.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

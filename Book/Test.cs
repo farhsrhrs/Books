@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -9,7 +10,9 @@ namespace Book
         private readonly AppLogic _logic;
         private AppCompany _appCompany;
         private readonly AppShoppingList _appShoppingList;
-
+        private  WarehouseService _warehouseService;
+        private WarehouseStockService _warehouseStockSerive;
+        
         public Test()
         {
             InitializeComponent();
@@ -17,9 +20,11 @@ namespace Book
             _logic = new AppLogic("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books");
 
             string connStr = "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books";
+            
             _appCompany = new AppCompany(connStr); // теперь _connectionString инициализирован
             _appShoppingList = new AppShoppingList(connStr);
-
+            _warehouseService = new WarehouseService(connStr);
+            _warehouseStockSerive = new WarehouseStockService(connStr);
 
             _appShoppingList.LoadShoppingLists(dgvShopping);
 
@@ -27,17 +32,18 @@ namespace Book
             InitializeDataGridBooks();
             InitializeDataGridWarehouses();
             InitializeDataGridCompanies();
+            InitializeWarehouseStockService();
 
             // загрузка данных в таблицы
             _logic.LoadBooks(dgvBooks);
             _logic.LoadWarehouses(dgvWarehouses);
-
+            
             // загрузка жанров в comboGenre
             _logic.LoadGenres(comboGenre);
 
             // загрузка книг для склада
-            _logic.LoadBooksCombo(comboBoxNameBook);
-
+            _logic.LoadBooksCombo(comboNameBook);
+            _warehouseService.LoadWarehouseNames(comboBoxWarehouse);
             // подписка на кнопки
             btnAdd.Click += btnAddBook_Click;
             btnRemoveById.Click += btnRemoveBook_Click;
@@ -49,6 +55,7 @@ namespace Book
             buttonAddCompany.Click += buttonAddCompany_Click;
             btnAddShopping.Click += btnAddShopping_Click;
             btnShowAll.Click += btnShowAll_Click; //подписка на кнопку все книги
+            
             //this.btnReloadShopping.Click += new System.EventHandler(this.btnReloadShopping_Click);
 
             _appCompany.EnableDragDrop(pictureBox1);
@@ -64,23 +71,113 @@ namespace Book
 
             // Загружаем текущий список заказов в DataGridView
             _appShoppingList.LoadShoppingList(dgvShopping);
+            _warehouseStockSerive.GetAllStock();
+            btnAddWarehouseStock.Click += btnAddWarehouseStock_Click;
 
         }
-        /*private void btnReloadShopping_Click(object sender, EventArgs e)
+        private void btnAddWarehouseStock_Click(object sender, EventArgs e)
         {
             try
             {
-                _appShoppingList.LoadShoppingList(dgvShopping);
+                // 1️⃣ Проверка выбранного склада по имени
+                if (comboBoxWarehouse.SelectedItem == null)
+                {
+                    MessageBox.Show("Выберите склад!");
+                    return;
+                }
+                string warehouseName = comboBoxWarehouse.SelectedItem.ToString();
+
+                int warehouseId;
+                using (var conn = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books"))
+                {
+                    conn.Open();
+                    string sql = "SELECT id FROM warehouse WHERE name = @name";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("name", warehouseName);
+                        var result = cmd.ExecuteScalar();
+                        if (result == null)
+                        {
+                            MessageBox.Show("Склад не найден в базе!");
+                            return;
+                        }
+                        warehouseId = Convert.ToInt32(result);
+                    }
+                }
+
+                // 2️⃣ Проверка выбранной книги по названию
+                if (comboNameBook.SelectedItem == null)
+                {
+                    MessageBox.Show("Выберите книгу!");
+                    return;
+                }
+                Book selectedBook = (Book)comboNameBook.SelectedItem;
+                string bookTitle = selectedBook.Title;
+
+                int bookId;
+                using (var conn = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books"))
+                {
+                    conn.Open();
+                    string sql = "SELECT id FROM book WHERE title = @title";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("title", bookTitle);
+                        var result = cmd.ExecuteScalar();
+                        if (result == null)
+                        {
+                            MessageBox.Show("Книга не найдена в базе!");
+                            return;
+                        }
+                        bookId = Convert.ToInt32(result);
+                    }
+                }
+
+                // 3️⃣ Проверка количества
+                string qtyText = textQuantity.Text.Trim();
+
+                if (string.IsNullOrEmpty(qtyText))
+                {
+                    MessageBox.Show("Введите количество!");
+                    return;
+                }
+
+                if (!int.TryParse(qtyText, out int quantity) || quantity <= 0)
+                {
+                    MessageBox.Show("Количество должно быть положительным целым числом!");
+                    return;
+                }
+
+
+                // 4️⃣ Добавляем запись на склад
+                _warehouseStockSerive.AddStock(warehouseId, bookId, quantity);
+                MessageBox.Show("Данные успешно добавлены на склад!");
+
+                // 5️⃣ Обновляем DataGridView
+                var stockList = _warehouseStockSerive.GetStockByWarehouse(warehouseId);
+                dataGridViewWarehouseStock.Rows.Clear();
+                foreach (var stock in stockList)
+                {
+                    dataGridViewWarehouseStock.Rows.Add(
+                        stock.Id,
+                        stock.WarehouseId,
+                        stock.BookId,
+                        stock.Quantity
+                    );
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при загрузке списка покупок: " + ex.Message);
+                MessageBox.Show("Ошибка при добавлении на склад: " + ex.Message);
             }
         }
-        */
+       
+        
+
+
+
         private void btnAddShopping_Click(object sender, EventArgs e)
         {
-            _appShoppingList.AddShoppingList(txtQuantity, comboBook, comboWarehouse, comboCompany, dgvShopping);
+            _appShoppingList.AddShoppingList(textQuantity, comboBook, comboWarehouse, comboCompany, dgvShopping);
         }
 
        // private void btnRemoveShopping_Click(object sender, EventArgs e)
@@ -110,8 +207,17 @@ namespace Book
         {
             if (tabControl1.SelectedTab == tabPage3) // вкладка "Добавить склад"
             {
-                _logic.LoadBooksIntoComboBox(comboBoxNameBook);
+                _logic.LoadBooksIntoComboBox(comboNameBook);
             }
+
+        }
+        private void InitializeWarehouseStockService()
+        {
+            dataGridViewWarehouseStock.Columns.Clear();
+            dataGridViewWarehouseStock.Columns.Add("Id", "ID");
+            dataGridViewWarehouseStock.Columns.Add("WarehouseId", "Склад");
+            dataGridViewWarehouseStock.Columns.Add("BookId", "Книга");
+            dataGridViewWarehouseStock.Columns.Add("Quantity", "Количество");
 
         }
         private void InitializeShoppingUI()
@@ -162,8 +268,8 @@ namespace Book
             dgvWarehouses.Columns.Clear();
             dgvWarehouses.Columns.Add("ID", "ID");
             dgvWarehouses.Columns.Add("Location", "Склад");
-            dgvWarehouses.Columns.Add("BookId", "ID Книги");
-            dgvWarehouses.Columns.Add("Quantity", "Кол-во");
+            dgvWarehouses.Columns.Add("name", "Название");
+
             dgvWarehouses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvWarehouses.MultiSelect = false;
             dgvWarehouses.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -183,7 +289,7 @@ namespace Book
 
         private void btnAddWarehouse_Click(object sender, EventArgs e)
         {
-            _logic.AddWarehouse(textLocation, comboBoxNameBook, textQuantity, dgvWarehouses);
+            _logic.AddWarehouse(textLocation, textBoxNameWarehouse, dgvWarehouses);
         }
 
         private void btnRemoveWarehouse_Click(object sender, EventArgs e)

@@ -114,16 +114,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppLogic.cs" />
-    <Compile Include="Properties\AppCompany.cs" />
-    <Compile Include="Properties\Company.cs" />
-    <Compile Include="Properties\CompanyService.cs" />
+    <Compile Include="Book\AppLogic.cs" />
+    <Compile Include="Campany\AppCompany.cs" />
+    <Compile Include="Campany\Company.cs" />
+    <Compile Include="Campany\CompanyService.cs" />
     <Compile Include="Shopping\AppShoppingList.cs" />
     <Compile Include="Shopping\ShoppingListService.cs" />
     <Compile Include="Shopping\ShoppingList.cs" />
-    <Compile Include="Warehouse.cs" />
-    <Compile Include="Book.cs" />
-    <Compile Include="BookManager.cs" />
+    <Compile Include="WarehouseStockService.cs" />
+    <Compile Include="Warehouse\Warehouse.cs" />
+    <Compile Include="Book\Book.cs" />
+    <Compile Include="Book\BookManager.cs" />
     <Compile Include="Genre.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -133,7 +134,8 @@
     <Compile Include="Test.Designer.cs">
       <DependentUpon>Test.cs</DependentUpon>
     </Compile>
-    <Compile Include="WarehouseService.cs" />
+    <Compile Include="Warehouse\WarehouseService.cs" />
+    <Compile Include="Warehouse_stock.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

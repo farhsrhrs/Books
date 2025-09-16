@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Npgsql;
 
 namespace Book
@@ -18,6 +19,7 @@ namespace Book
             return GetAllWarehouses().FirstOrDefault(w => w.Id == id);
         }
 
+
         // Получить все склады
         public List<Warehouse> GetAllWarehouses()
         {
@@ -28,7 +30,7 @@ namespace Book
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string sql = "SELECT id, location, book_id, quantity FROM warehouse ORDER BY id";
+                    string sql = "SELECT id, name, location FROM warehouse ORDER BY id";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     {
                         using (var reader = cmd.ExecuteReader())
@@ -36,10 +38,10 @@ namespace Book
                             while (reader.Read())
                             {
                                 warehouses.Add(new Warehouse(
-                                    reader.GetInt32(0),
-                                    reader.GetString(1),
-                                    reader.GetInt32(2),
-                                    reader.GetInt32(3)
+                        reader.GetInt32(0),      // id
+                        reader.GetString(1),     // name
+                        reader.GetString(2)      // location
+
                                 ));
                             }
                         }
@@ -55,25 +57,22 @@ namespace Book
         }
 
         // Добавить склад
-        public void AddWarehouse(string location, int bookId, int quantity)
+        public void AddWarehouse(string location,string name)
         {
             if (string.IsNullOrWhiteSpace(location))
                 throw new ArgumentException("Location не может быть пустым");
 
-            if (quantity < 0)
-                throw new ArgumentException("Quantity не может быть отрицательным");
 
             try
             {
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string sql = "INSERT INTO warehouse(location, book_id, quantity) VALUES (@loc, @book, @qty)";
+                    string sql = "INSERT INTO warehouse(location,name ) VALUES (@loc ,@nm )";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("loc", location);
-                        cmd.Parameters.AddWithValue("book", bookId);
-                        cmd.Parameters.AddWithValue("qty", quantity);
+                        cmd.Parameters.AddWithValue("nm", name);
 
                         int rows = cmd.ExecuteNonQuery();
                         if (rows == 0)
@@ -110,29 +109,25 @@ namespace Book
             }
         }
 
-        // Найти склады по книге
-        public List<Warehouse> SearchByBookId(int bookId)
+        public void LoadWarehouseNames(ComboBox comboBox)
         {
-            var warehouses = new List<Warehouse>();
+            comboBox.Items.Clear(); // очищаем предыдущие элементы
+
             try
             {
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string sql = "SELECT id, location, book_id, quantity FROM warehouse WHERE book_id=@book";
+
+                    string sql = "SELECT name FROM warehouse ORDER BY name";
+
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     {
-                        cmd.Parameters.AddWithValue("book", bookId);
                         using (var reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                warehouses.Add(new Warehouse(
-                                    reader.GetInt32(0),
-                                    reader.GetString(1),
-                                    reader.GetInt32(2),
-                                    reader.GetInt32(3)
-                                ));
+                                comboBox.Items.Add(reader.GetString(0));
                             }
                         }
                     }
@@ -140,10 +135,12 @@ namespace Book
             }
             catch (Exception ex)
             {
-                throw new Exception("Ошибка при поиске склада: " + ex.Message);
+                MessageBox.Show("Ошибка при загрузке складов: " + ex.Message);
             }
-
-            return warehouses;
         }
+
+        // Найти склады по книге
+
+
     }
 }

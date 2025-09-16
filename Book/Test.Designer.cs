@@ -42,6 +42,8 @@ namespace Book
             this.btnFind = new System.Windows.Forms.Button();
             this.btnShowAll = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBoxPrice = new System.Windows.Forms.TextBox();
             this.lblTitle = new System.Windows.Forms.Label();
             this.txtTitle = new System.Windows.Forms.TextBox();
             this.btnAdd = new System.Windows.Forms.Button();
@@ -52,15 +54,21 @@ namespace Book
             this.lblYear = new System.Windows.Forms.Label();
             this.txtYear = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.textBoxNameWarehouse = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.comboBoxWarehouse = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btnAddWarehouseStock = new System.Windows.Forms.Button();
             this.dgvWarehouses = new System.Windows.Forms.DataGridView();
             this.buttonAddWarehouse = new System.Windows.Forms.Button();
             this.labelQuantity = new System.Windows.Forms.Label();
             this.labelNameBook = new System.Windows.Forms.Label();
             this.labelLocation = new System.Windows.Forms.Label();
-            this.comboBoxNameBook = new System.Windows.Forms.ComboBox();
+            this.comboNameBook = new System.Windows.Forms.ComboBox();
             this.textQuantity = new System.Windows.Forms.TextBox();
             this.textLocation = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -85,9 +93,7 @@ namespace Book
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.textBoxPrice = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.dataGridViewWarehouseStock = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvBooks)).BeginInit();
@@ -101,6 +107,7 @@ namespace Book
             ((System.ComponentModel.ISupportInitialize)(this.dgvCompanies)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewWarehouseStock)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -272,6 +279,22 @@ namespace Book
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Добавить книгу";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 103);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(36, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Цена:";
+            // 
+            // textBoxPrice
+            // 
+            this.textBoxPrice.Location = new System.Drawing.Point(83, 100);
+            this.textBoxPrice.Name = "textBoxPrice";
+            this.textBoxPrice.Size = new System.Drawing.Size(200, 20);
+            this.textBoxPrice.TabIndex = 9;
+            // 
             // lblTitle
             // 
             this.lblTitle.Location = new System.Drawing.Point(13, 17);
@@ -345,12 +368,18 @@ namespace Book
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.dataGridViewWarehouseStock);
+            this.tabPage3.Controls.Add(this.textBoxNameWarehouse);
+            this.tabPage3.Controls.Add(this.label8);
+            this.tabPage3.Controls.Add(this.comboBoxWarehouse);
+            this.tabPage3.Controls.Add(this.label7);
+            this.tabPage3.Controls.Add(this.btnAddWarehouseStock);
             this.tabPage3.Controls.Add(this.dgvWarehouses);
             this.tabPage3.Controls.Add(this.buttonAddWarehouse);
             this.tabPage3.Controls.Add(this.labelQuantity);
             this.tabPage3.Controls.Add(this.labelNameBook);
             this.tabPage3.Controls.Add(this.labelLocation);
-            this.tabPage3.Controls.Add(this.comboBoxNameBook);
+            this.tabPage3.Controls.Add(this.comboNameBook);
             this.tabPage3.Controls.Add(this.textQuantity);
             this.tabPage3.Controls.Add(this.textLocation);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -361,17 +390,60 @@ namespace Book
             this.tabPage3.Text = "Добавить Склад";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // textBoxNameWarehouse
+            // 
+            this.textBoxNameWarehouse.Location = new System.Drawing.Point(156, 40);
+            this.textBoxNameWarehouse.Name = "textBoxNameWarehouse";
+            this.textBoxNameWarehouse.Size = new System.Drawing.Size(253, 20);
+            this.textBoxNameWarehouse.TabIndex = 12;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 42);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(99, 13);
+            this.label8.TabIndex = 11;
+            this.label8.Text = "Название склада:";
+            // 
+            // comboBoxWarehouse
+            // 
+            this.comboBoxWarehouse.FormattingEnabled = true;
+            this.comboBoxWarehouse.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.comboBoxWarehouse.Location = new System.Drawing.Point(471, 100);
+            this.comboBoxWarehouse.Name = "comboBoxWarehouse";
+            this.comboBoxWarehouse.Size = new System.Drawing.Size(228, 21);
+            this.comboBoxWarehouse.TabIndex = 10;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(298, 103);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(167, 13);
+            this.label7.TabIndex = 9;
+            this.label7.Text = "Выбрать расположение склада";
+            // 
+            // btnAddWarehouseStock
+            // 
+            this.btnAddWarehouseStock.Location = new System.Drawing.Point(606, 462);
+            this.btnAddWarehouseStock.Name = "btnAddWarehouseStock";
+            this.btnAddWarehouseStock.Size = new System.Drawing.Size(148, 23);
+            this.btnAddWarehouseStock.TabIndex = 8;
+            this.btnAddWarehouseStock.Text = "Добавить товар на склад";
+            this.btnAddWarehouseStock.UseVisualStyleBackColor = true;
+            // 
             // dgvWarehouses
             // 
             this.dgvWarehouses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvWarehouses.Location = new System.Drawing.Point(31, 168);
+            this.dgvWarehouses.Location = new System.Drawing.Point(11, 76);
             this.dgvWarehouses.Name = "dgvWarehouses";
-            this.dgvWarehouses.Size = new System.Drawing.Size(398, 228);
+            this.dgvWarehouses.Size = new System.Drawing.Size(221, 409);
             this.dgvWarehouses.TabIndex = 7;
             // 
             // buttonAddWarehouse
             // 
-            this.buttonAddWarehouse.Location = new System.Drawing.Point(620, 454);
+            this.buttonAddWarehouse.Location = new System.Drawing.Point(415, 40);
             this.buttonAddWarehouse.Name = "buttonAddWarehouse";
             this.buttonAddWarehouse.Size = new System.Drawing.Size(75, 23);
             this.buttonAddWarehouse.TabIndex = 6;
@@ -381,7 +453,7 @@ namespace Book
             // labelQuantity
             // 
             this.labelQuantity.AutoSize = true;
-            this.labelQuantity.Location = new System.Drawing.Point(28, 101);
+            this.labelQuantity.Location = new System.Drawing.Point(298, 160);
             this.labelQuantity.Name = "labelQuantity";
             this.labelQuantity.Size = new System.Drawing.Size(63, 13);
             this.labelQuantity.TabIndex = 5;
@@ -390,7 +462,7 @@ namespace Book
             // labelNameBook
             // 
             this.labelNameBook.AutoSize = true;
-            this.labelNameBook.Location = new System.Drawing.Point(28, 74);
+            this.labelNameBook.Location = new System.Drawing.Point(298, 133);
             this.labelNameBook.Name = "labelNameBook";
             this.labelNameBook.Size = new System.Drawing.Size(92, 13);
             this.labelNameBook.TabIndex = 4;
@@ -399,31 +471,31 @@ namespace Book
             // labelLocation
             // 
             this.labelLocation.AutoSize = true;
-            this.labelLocation.Location = new System.Drawing.Point(28, 48);
+            this.labelLocation.Location = new System.Drawing.Point(8, 17);
             this.labelLocation.Name = "labelLocation";
             this.labelLocation.Size = new System.Drawing.Size(124, 13);
             this.labelLocation.TabIndex = 3;
             this.labelLocation.Text = "Расположение склада:";
             // 
-            // comboBoxNameBook
+            // comboNameBook
             // 
-            this.comboBoxNameBook.FormattingEnabled = true;
-            this.comboBoxNameBook.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.comboBoxNameBook.Location = new System.Drawing.Point(176, 71);
-            this.comboBoxNameBook.Name = "comboBoxNameBook";
-            this.comboBoxNameBook.Size = new System.Drawing.Size(253, 21);
-            this.comboBoxNameBook.TabIndex = 2;
+            this.comboNameBook.FormattingEnabled = true;
+            this.comboNameBook.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.comboNameBook.Location = new System.Drawing.Point(446, 130);
+            this.comboNameBook.Name = "comboNameBook";
+            this.comboNameBook.Size = new System.Drawing.Size(253, 21);
+            this.comboNameBook.TabIndex = 2;
             // 
             // textQuantity
             // 
-            this.textQuantity.Location = new System.Drawing.Point(176, 98);
+            this.textQuantity.Location = new System.Drawing.Point(446, 157);
             this.textQuantity.Name = "textQuantity";
             this.textQuantity.Size = new System.Drawing.Size(253, 20);
             this.textQuantity.TabIndex = 1;
             // 
             // textLocation
             // 
-            this.textLocation.Location = new System.Drawing.Point(176, 45);
+            this.textLocation.Location = new System.Drawing.Point(156, 14);
             this.textLocation.Name = "textLocation";
             this.textLocation.Size = new System.Drawing.Size(253, 20);
             this.textLocation.TabIndex = 0;
@@ -448,6 +520,15 @@ namespace Book
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Создание заказа";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(572, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(111, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Процент скидки: {{}}";
             // 
             // label4
             // 
@@ -665,30 +746,13 @@ namespace Book
             this.toolStripStatusLabel.Size = new System.Drawing.Size(45, 17);
             this.toolStripStatusLabel.Text = "Готово";
             // 
-            // label5
+            // dataGridViewWarehouseStock
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(572, 66);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(111, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Процент скидки: {{}}";
-            // 
-            // textBoxPrice
-            // 
-            this.textBoxPrice.Location = new System.Drawing.Point(83, 100);
-            this.textBoxPrice.Name = "textBoxPrice";
-            this.textBoxPrice.Size = new System.Drawing.Size(200, 20);
-            this.textBoxPrice.TabIndex = 9;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(13, 103);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(36, 13);
-            this.label6.TabIndex = 10;
-            this.label6.Text = "Цена:";
+            this.dataGridViewWarehouseStock.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewWarehouseStock.Location = new System.Drawing.Point(301, 192);
+            this.dataGridViewWarehouseStock.Name = "dataGridViewWarehouseStock";
+            this.dataGridViewWarehouseStock.Size = new System.Drawing.Size(410, 251);
+            this.dataGridViewWarehouseStock.TabIndex = 13;
             // 
             // Test
             // 
@@ -718,6 +782,7 @@ namespace Book
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewWarehouseStock)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -751,7 +816,7 @@ namespace Book
         private Label labelQuantity;
         private Label labelNameBook;
         private Label labelLocation;
-        private ComboBox comboBoxNameBook;
+        private ComboBox comboNameBook;
         private TextBox textQuantity;
         private TextBox textLocation;
         private Label labelName;
@@ -784,5 +849,11 @@ namespace Book
         private Label label5;
         private Label label6;
         private TextBox textBoxPrice;
+        private Label label7;
+        private Button btnAddWarehouseStock;
+        private ComboBox comboBoxWarehouse;
+        private TextBox textBoxNameWarehouse;
+        private Label label8;
+        private DataGridView dataGridViewWarehouseStock;
     }
 }
