@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Book.Services; // предполагается, что BookService и WarehouseService в этом namespace
+using Book.Services;
+using OfficeOpenXml; // предполагается, что BookService и WarehouseService в этом namespace
+
 
 namespace Book
 {
@@ -17,6 +20,51 @@ namespace Book
             _bookService = new BookService(connectionString);
             _warehouseService = new WarehouseService(connectionString);
         }
+        public void ExportBooksToExcel(DataGridView dgvBooks, string filePath)
+        {
+            if (dgvBooks.Rows.Count == 0)
+            {
+                MessageBox.Show("Нет данных для экспорта!");
+                return;
+            }
+
+            try
+            {
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                using (var package = new ExcelPackage())
+                {
+                    var worksheet = package.Workbook.Worksheets.Add("Книги");
+
+                    // Заголовки
+                    for (int i = 0; i < dgvBooks.Columns.Count; i++)
+                    {
+                        worksheet.Cells[1, i + 1].Value = dgvBooks.Columns[i].HeaderText;
+                    }
+
+                    // Данные
+                    for (int i = 0; i < dgvBooks.Rows.Count; i++)
+                    {
+                        for (int j = 0; j < dgvBooks.Columns.Count; j++)
+                        {
+                            worksheet.Cells[i + 2, j + 1].Value = dgvBooks.Rows[i].Cells[j].Value?.ToString();
+                        }
+                    }
+
+                    // Сохраняем файл
+                    FileInfo fi = new FileInfo(filePath);
+                    package.SaveAs(fi);
+                }
+
+                MessageBox.Show("Экспорт выполнен!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при экспорте: " + ex.Message);
+            }
+        }
+
+
         public void LoadBooksIntoComboBox(ComboBox comboBox)
         {
             try

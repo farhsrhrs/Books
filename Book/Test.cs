@@ -6,6 +6,7 @@ namespace Book
     public partial class Test : Form
     {
         private readonly AppLogic _logic;
+        private AppCompany _appCompany;
 
         public Test()
         {
@@ -13,9 +14,14 @@ namespace Book
 
             _logic = new AppLogic("Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books");
 
+            string connStr = "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books";
+            _appCompany = new AppCompany(connStr); // теперь _connectionString инициализирован
+
+
             // инициализация DataGridView
             InitializeDataGridBooks();
             InitializeDataGridWarehouses();
+            InitializeDataGridCompanies();
 
             // загрузка данных в таблицы
             _logic.LoadBooks(dgvBooks);
@@ -33,6 +39,32 @@ namespace Book
             buttonAddWarehouse.Click += btnAddWarehouse_Click;
             
             tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
+            btnExport.Click += btnExport_Click;
+
+            buttonAddCompany.Click += buttonAddCompany_Click;
+
+            _appCompany.EnableDragDrop(pictureBox1);
+
+            // Загрузка компаний в dgv
+            _appCompany.LoadCompanies(dgvCompanies);
+
+        }
+        private void buttonAddCompany_Click(object sender, EventArgs e)
+        {
+            _appCompany.AddCompany(textBox1, textBox2, textBox3, pictureBox1, dgvCompanies);
+        }
+
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Excel Files|*.xlsx";
+                sfd.FileName = "Книги.xlsx";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    _logic.ExportBooksToExcel(dgvBooks, sfd.FileName);
+                }
+            }
         }
 
         private void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -41,6 +73,20 @@ namespace Book
             {
                 _logic.LoadBooksIntoComboBox(comboBoxNameBook);
             }
+
+        }
+        private void InitializeDataGridCompanies()
+        {
+            dgvCompanies.Columns.Clear();
+            dgvCompanies.Columns.Add("ID", "ID");
+            dgvCompanies.Columns.Add("Name", "Название");
+            dgvCompanies.Columns.Add("Organization", "Организация");
+            dgvCompanies.Columns.Add("Phone", "Телефон");
+            dgvCompanies.Columns.Add("Logo", "Логотип");
+
+            dgvCompanies.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvCompanies.MultiSelect = false;
+            dgvCompanies.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
         private void InitializeDataGridBooks()
         {

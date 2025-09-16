@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Book
@@ -73,6 +74,7 @@ namespace Book
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.dgvCompanies = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvBooks)).BeginInit();
@@ -83,6 +85,7 @@ namespace Book
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCompanies)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -430,6 +433,7 @@ namespace Book
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.dgvCompanies);
             this.tabPage4.Controls.Add(this.buttonAddCompany);
             this.tabPage4.Controls.Add(this.textBox3);
             this.tabPage4.Controls.Add(this.textBox2);
@@ -525,6 +529,11 @@ namespace Book
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.WaitOnLoad = true;
+            pictureBox1.AllowDrop = true;
+
+            // Событие при перетаскивании файла в PictureBox
+
+
             // 
             // statusStrip1
             // 
@@ -540,6 +549,14 @@ namespace Book
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
             this.toolStripStatusLabel.Size = new System.Drawing.Size(45, 17);
             this.toolStripStatusLabel.Text = "Готово";
+            // 
+            // dgvCompanies
+            // 
+            this.dgvCompanies.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvCompanies.Location = new System.Drawing.Point(31, 236);
+            this.dgvCompanies.Name = "dgvCompanies";
+            this.dgvCompanies.Size = new System.Drawing.Size(467, 243);
+            this.dgvCompanies.TabIndex = 9;
             // 
             // Test
             // 
@@ -565,9 +582,9 @@ namespace Book
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCompanies)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-            btnShowAll.Click += btnShowAll_Click;
 
         }
         private Label lblTitle;
@@ -612,5 +629,6 @@ namespace Book
         private Button buttonAddCompany;
         private Button buttonAddWarehouse;
         private DataGridView dgvWarehouses;
+        private DataGridView dgvCompanies;
     }
 }

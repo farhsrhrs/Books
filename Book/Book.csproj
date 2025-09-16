@@ -115,6 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppLogic.cs" />
+    <Compile Include="Properties\AppCompany.cs" />
+    <Compile Include="Properties\Company.cs" />
+    <Compile Include="Properties\CompanyService.cs" />
     <Compile Include="Warehouse.cs" />
     <Compile Include="Book.cs" />
     <Compile Include="BookManager.cs" />
