@@ -48,7 +48,7 @@ namespace Book
 
             buttonAddCompany.Click += buttonAddCompany_Click;
             btnAddShopping.Click += btnAddShopping_Click;
-
+            btnShowAll.Click += btnShowAll_Click; //подписка на кнопку все книги
             //this.btnReloadShopping.Click += new System.EventHandler(this.btnReloadShopping_Click);
 
             _appCompany.EnableDragDrop(pictureBox1);
@@ -151,6 +151,7 @@ namespace Book
             dgvBooks.Columns.Add("Author", "Автор");
             dgvBooks.Columns.Add("Year", "Год");
             dgvBooks.Columns.Add("Genre", "Жанр");
+            dgvBooks.Columns.Add("Price", "Цена");
             dgvBooks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvBooks.MultiSelect = false;
             dgvBooks.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -170,7 +171,7 @@ namespace Book
 
         private void btnAddBook_Click(object sender, EventArgs e)
         {
-            _logic.AddBook(txtTitle, txtAuthor, txtYear, comboGenre, dgvBooks);
+            _logic.AddBook(txtTitle, txtAuthor, txtYear, comboGenre,dgvBooks, textBoxPrice );
         }
 
 

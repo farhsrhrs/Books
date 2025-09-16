@@ -85,6 +85,9 @@ namespace Book
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.textBoxPrice = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvBooks)).BeginInit();
@@ -251,6 +254,8 @@ namespace Book
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.textBoxPrice);
             this.tabPage2.Controls.Add(this.lblTitle);
             this.tabPage2.Controls.Add(this.txtTitle);
             this.tabPage2.Controls.Add(this.btnAdd);
@@ -285,7 +290,7 @@ namespace Book
             // btnAdd
             // 
             this.btnAdd.BackColor = System.Drawing.Color.LightGreen;
-            this.btnAdd.Location = new System.Drawing.Point(243, 102);
+            this.btnAdd.Location = new System.Drawing.Point(243, 128);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 8;
@@ -303,7 +308,7 @@ namespace Book
             // comboGenre
             // 
             this.comboGenre.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboGenre.Location = new System.Drawing.Point(83, 104);
+            this.comboGenre.Location = new System.Drawing.Point(83, 130);
             this.comboGenre.Name = "comboGenre";
             this.comboGenre.Size = new System.Drawing.Size(150, 21);
             this.comboGenre.TabIndex = 7;
@@ -317,7 +322,7 @@ namespace Book
             // 
             // lblGenre
             // 
-            this.lblGenre.Location = new System.Drawing.Point(13, 107);
+            this.lblGenre.Location = new System.Drawing.Point(13, 131);
             this.lblGenre.Name = "lblGenre";
             this.lblGenre.Size = new System.Drawing.Size(60, 20);
             this.lblGenre.TabIndex = 6;
@@ -425,6 +430,7 @@ namespace Book
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.label5);
             this.tabPage5.Controls.Add(this.label4);
             this.tabPage5.Controls.Add(this.label3);
             this.tabPage5.Controls.Add(this.label2);
@@ -659,6 +665,31 @@ namespace Book
             this.toolStripStatusLabel.Size = new System.Drawing.Size(45, 17);
             this.toolStripStatusLabel.Text = "Готово";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(572, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(111, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Процент скидки: {{}}";
+            // 
+            // textBoxPrice
+            // 
+            this.textBoxPrice.Location = new System.Drawing.Point(83, 100);
+            this.textBoxPrice.Name = "textBoxPrice";
+            this.textBoxPrice.Size = new System.Drawing.Size(200, 20);
+            this.textBoxPrice.TabIndex = 9;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 103);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(36, 13);
+            this.label6.TabIndex = 10;
+            this.label6.Text = "Цена:";
+            // 
             // Test
             // 
             this.ClientSize = new System.Drawing.Size(784, 561);
@@ -750,5 +781,8 @@ namespace Book
         private Label label3;
         private Label label2;
         private Label label1;
+        private Label label5;
+        private Label label6;
+        private TextBox textBoxPrice;
     }
 }

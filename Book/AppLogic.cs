@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -112,34 +113,53 @@ namespace Book
                 {
                     case "Название":
                         filtered = allBooks
-    .Where(b => b.Title.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-    .ToList();
+                            .Where(b => b.Title.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                            .ToList();
                         break;
+
                     case "Автор":
                         filtered = allBooks
-    .Where(b => b.Author.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-    .ToList();
+                            .Where(b => b.Author.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                            .ToList();
                         break;
+
                     case "Год":
                         if (int.TryParse(query, out int year))
                             filtered = allBooks.Where(b => b.Year == year).ToList();
                         break;
+
                     case "Жанр":
                         filtered = allBooks
-    .Where(b => b.GenreName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
-    .ToList();
+                            .Where(b => b.GenreName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+                            .ToList();
+                        break;
+
+                    case "Цена":
+                        if (decimal.TryParse(query, out decimal price))
+                        {
+                            // точное совпадение
+                            filtered = allBooks.Where(b => b.Price == price).ToList();
+                        }
+                        else
+                        {
+                            // если пользователь вводит "12" → найдём всё, что содержит "12"
+                            filtered = allBooks
+                                .Where(b => b.Price.ToString().Contains(query))
+                                .ToList();
+                        }
                         break;
                 }
 
                 dgv.Rows.Clear();
                 foreach (var b in filtered)
-                    dgv.Rows.Add(b.Id, b.Title, b.Author, b.Year, b.GenreName);
+                    dgv.Rows.Add(b.Id, b.Title, b.Author, b.Year,b.GenreName ,  b.Price);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка при поиске: " + ex.Message);
             }
         }
+
 
         // загрузка жанров в comboBox
         public void LoadGenres(ComboBox combo)
@@ -185,7 +205,7 @@ namespace Book
                 dgv.Rows.Clear();
                 foreach (var b in books)
                 {
-                    dgv.Rows.Add(b.Id, b.Title, b.Author, b.Year, b.GenreName);
+                    dgv.Rows.Add(b.Id, b.Title, b.Author, b.Year, b.GenreName,b.Price);
                 }
             }
             catch (Exception ex)
@@ -214,7 +234,7 @@ namespace Book
 
 
         // --- Добавить книгу (параметры передаём контролы формы, чтобы логика могла читать/очищать их) ---
-        public void AddBook(TextBox txtTitle, TextBox txtAuthor, TextBox txtYear, ComboBox comboGenre, DataGridView dgvBooks, ComboBox comboBooksForWarehouse = null)
+        public void AddBook(TextBox txtTitle, TextBox txtAuthor, TextBox txtYear, ComboBox comboGenre, DataGridView dgvBooks,TextBox textBoxPrice, ComboBox comboBooksForWarehouse = null )
         {
             try
             {
@@ -223,6 +243,14 @@ namespace Book
 
                 string title = txtTitle.Text.Trim();
                 string author = txtAuthor.Text.Trim();
+                if (!decimal.TryParse(textBoxPrice.Text.Trim(), out decimal price))
+                {
+                    MessageBox.Show("Введите корректную цену.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // price теперь содержит корректное decimal значение
+
                 if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(author))
                 {
                     MessageBox.Show("Название и автор обязательны.", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -241,7 +269,7 @@ namespace Book
                     return;
                 }
 
-                _bookService.AddBook(title, author, year, genre.Id);
+                _bookService.AddBook(title, author, year, genre.Id, price);
 
                 // обновляем таблицу и, при необходимости, выпадающий список книг
                 LoadBooks(dgvBooks);
@@ -251,6 +279,7 @@ namespace Book
                 txtTitle.Clear();
                 txtAuthor.Clear();
                 txtYear.Clear();
+                textBoxPrice.Clear();
 
                 MessageBox.Show("Книга добавлена.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

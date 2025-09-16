@@ -25,20 +25,21 @@ namespace Book.Services
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(
-                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
-                    "FROM book b JOIN genre g ON b.genre_id=g.id ORDER BY b.id", conn))
+                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, b.price, g.name " +
+                    "FROM book b JOIN genre g ON b.genre_id = g.id ORDER BY b.id", conn))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             books.Add(new Book(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetInt32(3),
-                                reader.GetInt32(4),
-                                reader.GetString(5)
+                                reader.GetInt32(0),   // b.id
+                                reader.GetString(1),  // b.title
+                                reader.GetString(2),  // b.author
+                                reader.GetInt32(3),   // b.year
+                                reader.GetInt32(4),   // b.genre_id
+                                reader.GetDecimal(5), // b.price
+                                reader.GetString(6)
                             ));
                         }
                     }
@@ -46,6 +47,7 @@ namespace Book.Services
             }
             return books;
         }
+
 
         public List<Genre> GetAllGenres()
         {
@@ -71,19 +73,21 @@ namespace Book.Services
             return genres;
         }
 
-        public void AddBook(string title, string author, int year, int genreId)
+        public void AddBook(string title, string author, int year, int genreId, decimal price)
         {
             using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 using (var cmd = new NpgsqlCommand(
-                    "INSERT INTO book(title, author, year, genre_id) VALUES (@title,@author,@year,@genre)",
+                    "INSERT INTO book(title, author, year, genre_id, price ) VALUES (@title,@author,@year,@genre,@price)",
                     conn))
                 {
                     cmd.Parameters.AddWithValue("title", title);
                     cmd.Parameters.AddWithValue("author", author);
                     cmd.Parameters.AddWithValue("year", year);
                     cmd.Parameters.AddWithValue("genre", genreId);
+                    cmd.Parameters.AddWithValue("price", price);
+
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -137,9 +141,11 @@ namespace Book.Services
                 else if (criteria == "Автор") sql = "b.author ILIKE @q";
                 else if (criteria == "Год") sql = "b.year = @q";
                 else if (criteria == "Жанр") sql = "g.name ILIKE @q";
+                else if (criteria == "Цена") sql = "b.price ILIKE @q";
+
 
                 using (var cmd = new NpgsqlCommand(
-                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, g.name " +
+                    "SELECT b.id, b.title, b.author, b.year, b.genre_id, b.price, g.name " +
                     "FROM book b JOIN genre g ON b.genre_id=g.id WHERE " + sql, conn))
                 {
                     if (criteria == "Год")
@@ -152,12 +158,13 @@ namespace Book.Services
                         while (reader.Read())
                         {
                             books.Add(new Book(
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2),
-                                reader.GetInt32(3),
-                                reader.GetInt32(4),
-                                reader.GetString(5)
+                        reader.GetInt32(0),   // b.id
+                        reader.GetString(1),  // b.title
+                        reader.GetString(2),  // b.author
+                        reader.GetInt32(3),   // b.year
+                        reader.GetInt32(4),   // b.genre_id
+                        reader.GetDecimal(5), // b.price
+                         reader.GetString(6)
                             ));
                         }
                     }

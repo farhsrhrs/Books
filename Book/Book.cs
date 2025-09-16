@@ -1,4 +1,6 @@
-﻿namespace Book
+﻿using System.Diagnostics;
+
+namespace Book
 {
     public class Book
     {
@@ -9,27 +11,20 @@
         public string Author { get; set; }
         public int Year { get; set; }
         public int GenreId { get; set; }       // id жанра
-        public string GenreName { get; set; }  // название жанра
+        public string GenreName { get; set; }
+        public decimal Price { get; set; } // название жанра
 
         // Конструктор для режима без БД
-        public Book(string title, string author, int year, int genreId, string genreName)
-        {
-            Id = _nextId++;
-            Title = title;
-            Author = author;
-            Year = year;
-            GenreId = genreId;
-            GenreName = genreName;
-        }
 
         // Конструктор для загрузки из БД
-        public Book(int id, string title, string author, int year, int genreId, string genreName)
+        public Book(int id, string title, string author, int year, int genreId, decimal price, string genreName)
         {
             Id = id;
             Title = title;
             Author = author;
             Year = year;
             GenreId = genreId;
+            Price = price;
             GenreName = genreName;
         }
     }
