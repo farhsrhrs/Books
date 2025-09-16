@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Book
 {
@@ -7,6 +8,7 @@ namespace Book
     {
         private readonly AppLogic _logic;
         private AppCompany _appCompany;
+        private readonly AppShoppingList _appShoppingList;
 
         public Test()
         {
@@ -16,7 +18,10 @@ namespace Book
 
             string connStr = "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books";
             _appCompany = new AppCompany(connStr); // теперь _connectionString инициализирован
+            _appShoppingList = new AppShoppingList(connStr);
 
+
+            _appShoppingList.LoadShoppingLists(dgvShopping);
 
             // инициализация DataGridView
             InitializeDataGridBooks();
@@ -42,13 +47,47 @@ namespace Book
             btnExport.Click += btnExport_Click;
 
             buttonAddCompany.Click += buttonAddCompany_Click;
+            btnAddShopping.Click += btnAddShopping_Click;
+
+            //this.btnReloadShopping.Click += new System.EventHandler(this.btnReloadShopping_Click);
 
             _appCompany.EnableDragDrop(pictureBox1);
 
             // Загрузка компаний в dgv
             _appCompany.LoadCompanies(dgvCompanies);
 
+
+            // Загрузка данных в comboBox
+            _appShoppingList.LoadCompaniesToComboBox(comboCompany);
+            _appShoppingList.LoadWarehousesToComboBox(comboWarehouse);
+            _appShoppingList.LoadBooksToComboBox(comboBook);
+
+            // Загружаем текущий список заказов в DataGridView
+            _appShoppingList.LoadShoppingList(dgvShopping);
+
         }
+        /*private void btnReloadShopping_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                _appShoppingList.LoadShoppingList(dgvShopping);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке списка покупок: " + ex.Message);
+            }
+        }
+        */
+        private void btnAddShopping_Click(object sender, EventArgs e)
+        {
+            _appShoppingList.AddShoppingList(txtQuantity, comboBook, comboWarehouse, comboCompany, dgvShopping);
+        }
+
+       // private void btnRemoveShopping_Click(object sender, EventArgs e)
+       // {
+       //     _appShoppingList.RemoveShoppingList(txtShoppingId, dgvShopping);
+      //  }
+
         private void buttonAddCompany_Click(object sender, EventArgs e)
         {
             _appCompany.AddCompany(textBox1, textBox2, textBox3, pictureBox1, dgvCompanies);
@@ -74,6 +113,22 @@ namespace Book
                 _logic.LoadBooksIntoComboBox(comboBoxNameBook);
             }
 
+        }
+        private void InitializeShoppingUI()
+        {
+            // Таблица
+            dgvShopping.Columns.Clear();
+            dgvShopping.Columns.Add("Id", "ID");
+            dgvShopping.Columns.Add("Quantity", "Количество");
+            dgvShopping.Columns.Add("BookId", "Книга");
+            dgvShopping.Columns.Add("WarehouseId", "Склад");
+            dgvShopping.Columns.Add("CompanyId", "Компания");
+            dgvShopping.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            // Загрузка данных в ComboBox
+            _logic.LoadBooksToCombo(comboBook);
+            _logic.LoadWarehousesToComboBox(comboWarehouse);
+            _appCompany.LoadCompaniesToComboBox(comboCompany);
         }
         private void InitializeDataGridCompanies()
         {

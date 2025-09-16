@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Npgsql;
 
 namespace Book
@@ -11,6 +12,10 @@ namespace Book
         public WarehouseService(string connectionString)
         {
             _connectionString = connectionString;
+        }
+        public Warehouse GetWarehouseById(int id)
+        {
+            return GetAllWarehouses().FirstOrDefault(w => w.Id == id);
         }
 
         // Получить все склады

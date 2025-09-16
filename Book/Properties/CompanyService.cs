@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Npgsql;
 //using Book.Models;
 
@@ -15,6 +16,11 @@ namespace Book
         }
 
         // Добавление новой компании
+        public Company GetCompanyById(int id)
+        {
+            return GetAllCompanies().FirstOrDefault(c => c.Id == id);
+        }
+
         public void AddCompany(string name, string organization, string phone, byte[] logo)
         {
             using (var conn = new NpgsqlConnection(_connectionString))

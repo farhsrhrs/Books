@@ -63,7 +63,21 @@ namespace Book
                 MessageBox.Show("Ошибка при экспорте: " + ex.Message);
             }
         }
-
+        public void LoadWarehousesToComboBox(ComboBox comboBox)
+        {
+            try
+            {
+                var whs = _warehouseService.GetAllWarehouses();
+                comboBox.DataSource = null;
+                comboBox.DataSource = whs;
+                comboBox.DisplayMember = "Location";
+                comboBox.ValueMember = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке складов: " + ex.Message);
+            }
+        }
 
         public void LoadBooksIntoComboBox(ComboBox comboBox)
         {

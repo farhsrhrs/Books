@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Npgsql;
 
 namespace Book.Services
@@ -11,6 +12,10 @@ namespace Book.Services
         public BookService(string connStr)
         {
             connectionString = connStr;
+        }
+        public Book GetBookById(int id)
+        {
+            return GetAllBooks().FirstOrDefault(b => b.Id == id);
         }
 
         public List<Book> GetAllBooks()

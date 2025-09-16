@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -82,6 +83,38 @@ namespace Book
                 MessageBox.Show("Ошибка при добавлении компании: " + ex.Message);
             }
         }
+        public void LoadCompaniesToComboBox(ComboBox comboBox)
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand("SELECT id, name FROM company", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        var companies = new List<Company>();
+                        while (reader.Read())
+                        {
+                            companies.Add(new Company
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1)
+                            });
+                        }
+                        comboBox.DataSource = null;
+                        comboBox.DataSource = companies;
+                        comboBox.DisplayMember = "Name";
+                        comboBox.ValueMember = "Id";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке компаний: " + ex.Message);
+            }
+        }
+
 
         // Загрузка компаний в DataGridView
         public void LoadCompanies(DataGridView dgv)
