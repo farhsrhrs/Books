@@ -71,10 +71,42 @@ namespace Book
 
             // Загружаем текущий список заказов в DataGridView
             _appShoppingList.LoadShoppingList(dgvShopping);
-            _warehouseStockSerive.GetAllStock();
+            LoadWarehouseStock(dataGridViewWarehouseStock);
             btnAddWarehouseStock.Click += btnAddWarehouseStock_Click;
 
         }
+        public void LoadWarehouseStock(DataGridView dgv)
+        {
+            if (dgv == null) throw new ArgumentNullException(nameof(dgv));
+
+            try
+            {
+                // получаем все записи из warehouse_stock
+                var stockList = _warehouseStockSerive.GetAllStock();
+
+                dgv.Rows.Clear();
+                dgv.Columns.Clear();
+
+                dgv.Columns.Add("Id", "ID");
+                dgv.Columns.Add("Warehouse", "Склад");
+                dgv.Columns.Add("Book", "Книга");
+                dgv.Columns.Add("Quantity", "Количество");
+
+                foreach (var stock in stockList)
+                {
+                    // Получаем человеко-читаемые значения по Id
+                    string warehouseName = _warehouseService.GetWarehouseById(stock.WarehouseId)?.Name ?? "";
+                    string bookTitle = _logic.GetBookById(stock.BookId)?.Title ?? "";
+
+                    dgv.Rows.Add(stock.Id, warehouseName, bookTitle, stock.Quantity);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке складских данных: " + ex.Message);
+            }
+        }
+
         private void btnAddWarehouseStock_Click(object sender, EventArgs e)
         {
             try

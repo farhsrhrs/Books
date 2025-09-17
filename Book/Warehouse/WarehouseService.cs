@@ -39,9 +39,9 @@ namespace Book
                             {
                                 warehouses.Add(new Warehouse(
                         reader.GetInt32(0),      // id
-                        reader.GetString(1),     // name
-                        reader.GetString(2)      // location
-
+                             
+                        reader.GetString(2),  // name    
+                        reader.GetString(1) // location
                                 ));
                             }
                         }

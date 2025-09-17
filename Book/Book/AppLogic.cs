@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Book.Services;
+using Npgsql;
 using OfficeOpenXml; // предполагается, что BookService и WarehouseService в этом namespace
 
 
@@ -15,12 +16,45 @@ namespace Book
     {
         private readonly BookService _bookService;
         private readonly WarehouseService _warehouseService;
+        private readonly string _connectionString = "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=books";
 
         public AppLogic(string connectionString)
         {
             _bookService = new BookService(connectionString);
             _warehouseService = new WarehouseService(connectionString);
         }
+        public Book GetBookById(int id)
+{
+    using (var conn = new NpgsqlConnection(_connectionString))
+    {
+        conn.Open();
+        string sql = "SELECT b.id, b.title, b.author, b.year, b.genre_id, b.price, g.name " +
+                     "FROM book b JOIN genre g ON b.genre_id = g.id WHERE b.id = @id";
+        using (var cmd = new NpgsqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("id", id);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new Book(
+                        reader.GetInt32(0),   // id
+                        reader.GetString(1),  // title
+                        reader.GetString(2),  // author
+                        reader.GetInt32(3),   // year
+                        reader.GetInt32(4),   // genre_id
+                        reader.GetDecimal(5), // price
+                        reader.GetString(6)   // genre name
+                    );
+                }
+            }
+        }
+    }
+
+    return null; // если книга не найдена
+}
+
         public void ExportBooksToExcel(DataGridView dgvBooks, string filePath)
         {
             if (dgvBooks.Rows.Count == 0)

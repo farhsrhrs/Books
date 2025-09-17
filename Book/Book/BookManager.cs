@@ -13,6 +13,7 @@ namespace Book.Services
         {
             connectionString = connStr;
         }
+
         public Book GetBookById(int id)
         {
             return GetAllBooks().FirstOrDefault(b => b.Id == id);
