@@ -16,3 +16,6 @@ v0.5
 
 v0.6 
 <img width="782" height="512" alt="image" src="https://github.com/user-attachments/assets/cb6e3229-2439-42c3-9238-a61bd3a6ecd2" />
+
+v2.4
+<img width="786" height="593" alt="image" src="https://github.com/user-attachments/assets/cb08b32b-06b0-4c02-9acc-438c1e32026f" />
